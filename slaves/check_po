@@ -21,6 +21,7 @@ fi
 PATTERNS_FILE="$(mktemp -t XXXXXX.patterns)"
 echo "
 boilerplate-in-date
+boilerplate-in-initial-comments
 boilerplate-in-language-team
 boilerplate-in-last-translator
 boilerplate-in-project-id-version
