@@ -44,7 +44,7 @@ unknown-poedit-language
 " | grep -v '^$' > "$PATTERNS_FILE"
 
 CPUS=$(egrep '^processor[[:space:]]+:' /proc/cpuinfo | wc -l)
-OUTPUT=$(find -iname "$FILE_GLOB" -print0 \
+OUTPUT=$(find -wholename ./tmp -prune -o \( -iname "$FILE_GLOB" -print0 \) \
                 | xargs -0 --max-procs="$CPUS" --max-args=64 i18nspector \
                 | grep -v --line-regexp '' \
                 | grep -v -f "$PATTERNS_FILE")
