@@ -41,6 +41,7 @@ no-version-in-project-id-version
 stray-previous-msgid
 unable-to-determine-language
 unknown-poedit-language
+unusual-plural-forms
 " | grep -v '^$' > "$PATTERNS_FILE"
 
 CPUS=$(egrep '^processor[[:space:]]+:' /proc/cpuinfo | wc -l)
