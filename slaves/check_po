@@ -26,6 +26,7 @@ boilerplate-in-language-team
 boilerplate-in-last-translator
 boilerplate-in-project-id-version
 codomain-error-in-plural-forms
+codomain-error-in-unused-plural-forms
 conflict-marker-in-header-entry
 fuzzy-header-entry
 incorrect-plural-forms
@@ -43,6 +44,7 @@ stray-previous-msgid
 unable-to-determine-language
 unknown-poedit-language
 unusual-plural-forms
+unusual-unused-plural-forms
 " | grep -v '^$' > "$PATTERNS_FILE"
 
 CPUS=$(egrep '^processor[[:space:]]+:' /proc/cpuinfo | wc -l)
