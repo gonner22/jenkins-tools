@@ -53,8 +53,11 @@ OUTPUT=$(find -wholename ./tmp -prune -o \( -iname "$FILE_GLOB" -print0 \) \
 ### Output and exit code
 # Our automated testing jobs depend on it, beware!
 
-# Output the filtered i18nspector's output
-echo -n "$OUTPUT"
-
-# Exit code: 0 iff. the filtered i18nspector's output was empty
-[ $(echo -n "$OUTPUT" | wc -l) -eq 0 ]
+if [ -z "$OUTPUT" ]; then
+    exit 0
+else
+    # Output the filtered i18nspector's output
+    echo "$OUTPUT"
+    # Exit code: 0 iff. the filtered i18nspector's output was empty
+    exit 1
+fi
