@@ -32,6 +32,8 @@ else
     FILE_GLOB='*.po'
 fi
 
+CPUS=$(egrep '^processor[[:space:]]+:' /proc/cpuinfo | wc -l)
+
 PATTERNS_FILE="$(mktemp -t XXXXXX.patterns)"
 echo "
 boilerplate-in-date
@@ -61,7 +63,6 @@ unusual-plural-forms
 unusual-unused-plural-forms
 " | grep -v '^$' > "$PATTERNS_FILE"
 
-CPUS=$(egrep '^processor[[:space:]]+:' /proc/cpuinfo | wc -l)
 OUTPUT_I18NINSPECTOR=$(files \
                 | xargs -0 --max-procs="$CPUS" --max-args=64 i18nspector \
                 | grep -v --line-regexp '' \
