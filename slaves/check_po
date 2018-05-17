@@ -90,6 +90,9 @@ OUTPUT_I18NINSPECTOR=$(files \
 
 checkOutput "$OUTPUT_I18NINSPECTOR" "i18nspector is not happy with following files:"
 
+#Check Content-Type: text/plain; charset=UTF-8\n
+checkPOHeader "Content-Type: text/plain; charset=UTF-8" "Content-Type is not text/plain; charset=UTF-8:"
+
 #Check Project-Id-Version: \n
 checkPOHeader "Project-Id-Version: " "Project-Id-Version header is not empty for following files:"
 
