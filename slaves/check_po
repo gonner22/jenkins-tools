@@ -3,6 +3,8 @@
 # vim: set filetype=sh sw=4 sts=4 expandtab autoindent:
 
 # Usage: check_po.sh [LANGUAGE]
+# or
+# Usage: check_po.sh [file1 [file2]...]
 
 set -u
 
@@ -17,7 +19,11 @@ checkOutput()
 
 files()
 {
-    find -wholename ./tmp -prune -o \( -iname "$FILE_GLOB" -print0 \)
+    if [ -z "$FILES" ]; then
+        find -wholename ./tmp -prune -o \( -iname "$FILE_GLOB" -print0 \)
+    else
+        echo -n "$FILES" | tr " " "\0"
+    fi
 }
 
 checkPOHeader()
@@ -34,10 +40,13 @@ if ! [ -x "`which i18nspector`" ] ; then
     exit 2
 fi
 
-if [ $# -ge 1 ] ; then
+FILES=""
+if [ $# -eq 0 ] ; then
+    FILE_GLOB='*.po'
+elif [ $# -eq 1 -a ! -f "${1}" ] ; then
     FILE_GLOB="*.${1}.po"
 else
-    FILE_GLOB='*.po'
+    FILES="$@"
 fi
 
 CPUS=$(egrep '^processor[[:space:]]+:' /proc/cpuinfo | wc -l)
