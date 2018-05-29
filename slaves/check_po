@@ -90,6 +90,13 @@ OUTPUT_I18NINSPECTOR=$(files \
 
 checkOutput "$OUTPUT_I18NINSPECTOR" "i18nspector is not happy with following files:"
 
+# Test if files are wrapped to 79 chars
+OUTPUT_MSGCAT=$(files \
+                | xargs -0 --max-procs="$CPUS" --max-args=64 -I {} \
+                sh -c 'TMPFILE="$(mktemp -t XXXXXX.`basename {}`)"; msgcat -w 79 "{}" -o "${TMPFILE}"; MSG=$(diff -q "{}" "${TMPFILE}"); EXIT=$?; rm "${TMPFILE}"; if [ ${EXIT} -ne 0 ]; then echo "{}"; fi')
+
+checkOutput "$OUTPUT_MSGCAT" "following files needs to be rewrapped to 79 chars:"
+
 # Check Content-Type: text/plain; charset=UTF-8\n
 checkPOHeader "Content-Type: text/plain; charset=UTF-8" "Content-Type is not text/plain; charset=UTF-8:"
 
