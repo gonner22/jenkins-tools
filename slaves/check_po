@@ -90,19 +90,19 @@ OUTPUT_I18NINSPECTOR=$(files \
 
 checkOutput "$OUTPUT_I18NINSPECTOR" "i18nspector is not happy with following files:"
 
-#Check Content-Type: text/plain; charset=UTF-8\n
+# Check Content-Type: text/plain; charset=UTF-8\n
 checkPOHeader "Content-Type: text/plain; charset=UTF-8" "Content-Type is not text/plain; charset=UTF-8:"
 
-#Check Project-Id-Version: \n
-checkPOHeader "Project-Id-Version: " "Project-Id-Version header is not empty for following files:"
+# Check Project-Id-Version: \n
+checkPOHeader "Project-Id-Version: " "Project-Id-Version header should be empty for following files:"
 
-#Check Language-Team: Tails translators <tails-l10n@boum.org>\n
+# Check Language-Team: Tails translators <tails-l10n@boum.org>\n
 checkPOHeader "Language-Team: Tails translators <tails-l10n@boum.org>" "Language-Team header is not 'Tails translators <tails-l10n@boum.org>':"
 
-#Check Last-Translator: Tails translators\n
+# Check Last-Translator: Tails translators\n
 checkPOHeader "Last-Translator: Tails translators" "Last-Translator header is not 'Tails translators':"
 
-#Check Language like file extension Language: LANG\n
+# Check Language like file extension Language: LANG\n
 
 # FNAME is full path (./pathto/file.inital.de.po)
 # BASENAME is only the name of the file (file.inital.de.po)
@@ -112,6 +112,6 @@ checkPOHeader "Last-Translator: Tails translators" "Last-Translator header is no
 OUTPUT_LANGUAGE=$(files \
             | xargs -0 --max-procs="$CPUS" --max-args=64 -I {} \
                 sh -c 'FNAME="{}"; BASENAME="${FNAME#*/}"; BASENAME1="${BASENAME%.*}"; LANG="${BASENAME1##*.}"; grep -L "\"Language: ${LANG}\\\n\"" {}')
-checkOutput "$OUTPUT_LANGUAGE" "langauge header is not like the file extension:"
+checkOutput "$OUTPUT_LANGUAGE" "Language header does not correspond to PO file extension:"
 
 exit 0
