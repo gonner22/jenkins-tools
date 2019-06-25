@@ -80,7 +80,7 @@ class NoLanguageError(Exception):
         self.fname = fname
 
     def __str__(self):
-        return f"Can't detect expect file suffix .XX.po for '{self.fname}'."
+        return "Can't detect expect file suffix .XX.po for '{fname}'.".format(fname=self.fname)
     pass
 
 class PoFile:
