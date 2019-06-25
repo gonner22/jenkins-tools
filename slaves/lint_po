@@ -100,7 +100,7 @@ class PoFile:
     def lang(self) -> str:
         """@returns: language of filename"""
         name = os.path.basename(self.fname)
-        m = re.match(r"^[^.].*\.(?P<lang>[A-Za-z_]+)\.po$", name)
+        m = re.match(r"^(?:[^.].*\.)?(?P<lang>[A-Za-z_]+)\.po$", name)
         if not m:
             raise NoLanguageError(self.fname)
         return m.group("lang")
@@ -238,6 +238,7 @@ def main(logger) -> None:
 
     if args.lang:
         args.files += glob.glob("**/*.{lang}.po".format(lang=args.lang), recursive=True)
+        args.files += glob.glob("**/{lang}.po".format(lang=args.lang), recursive=True)
 
     if args.cached:
         # get top level directory of the current git repository
