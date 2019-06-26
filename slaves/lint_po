@@ -98,7 +98,8 @@ class PoFile:
                 }
 
     def lang(self) -> str:
-        """@returns: language of filename"""
+        """@returns: language of filename, possibly ending with an underscore
+        followed by the territory or script"""
         name = os.path.basename(self.fname)
         m = re.match(r"^(?:[^.].*\.)?(?P<lang>[A-Za-z_]+)\.po$", name)
         if not m:
