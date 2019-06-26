@@ -106,6 +106,18 @@ class PoFile:
             raise NoLanguageError(self.fname)
         return m.group("lang")
 
+    def lang_without_script(self) -> str:
+        """@returns: language of filename, with any script suffix stripped"""
+        lang = self.lang()
+        # a script suffix (e.g. "_Latn") starts with an underscore,
+        # followed by the script name in title case, which we
+        # approximate as an upper case letter followed by a lower case one
+        m = re.match(r"(?P<lang_without_script>.*)_[A-Z][a-z][A-Za-z]*$", lang)
+        if m:
+            return m.group("lang_without_script")
+        else:
+            return lang
+
     def check(self, key: str, value: str) -> bool:
         """check if there is "key: value\\n" in PO header"""
         try:
@@ -161,7 +173,7 @@ class PoFile:
         """@returns a list of issues raised by i18nspector removes
                     allowed issues from @I18NINSPECTOR_ACCEPT.
         """
-        cmd = ["i18nspector", "--language", self.lang(), self.fname]
+        cmd = ["i18nspector", "--language", self.lang_without_script(), self.fname]
         process = subprocess.run(
                 cmd,
                 stdout=subprocess.PIPE,

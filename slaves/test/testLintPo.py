@@ -112,6 +112,12 @@ class TestCheckPo(unittest.TestCase):
         with self.assertRaises(lint_po.NoLanguageError, msg=_p.fname):
             _p.lang()
 
+    def test_lang_without_script(self):
+        self.assertEqual(lint_po.PoFile("index.de.po").lang_without_script(), "de")
+        self.assertEqual(lint_po.PoFile("index.de_DE.po").lang_without_script(), "de_DE")
+        self.assertEqual(lint_po.PoFile("index.sr_Latn.po").lang_without_script(), "sr")
+        self.assertEqual(lint_po.PoFile("index.sr_LAtn.po").lang_without_script(), "sr_LAtn")
+
     def test_needs_rewrap(self):
         with lint_po.pofile_readonly(os.path.join(DIRNAME, "checkPo/length")) as poFile:
             self.assertEqual(poFile.needs_rewrap(), True)
