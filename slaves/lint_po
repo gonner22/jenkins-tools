@@ -160,7 +160,7 @@ class PoFile:
         """@returns a list of issues raised by i18nspector removes
                     allowed issues from @I18NINSPECTOR_ACCEPT.
         """
-        cmd = ["i18nspector", "-l", self.lang(), self.fname]
+        cmd = ["i18nspector", "--language", self.lang(), self.fname]
         process = subprocess.run(
                 cmd,
                 stdout=subprocess.PIPE,
