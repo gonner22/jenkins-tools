@@ -96,6 +96,7 @@ class TestCheckPo(unittest.TestCase):
     def test_lang(self):
         self.assertEqual(lint_po.PoFile("index.de.po").lang(), "de")
         self.assertEqual(lint_po.PoFile("x/a/a.fb.xx.po").lang(), "xx")
+        self.assertEqual(lint_po.PoFile("a.po").lang(), "a")
 
         _p = lint_po.PoFile(".de.po")
         with self.assertRaises(lint_po.NoLanguageError, msg=_p.fname) as e:
@@ -104,10 +105,6 @@ class TestCheckPo(unittest.TestCase):
         self.assertEqual(str(e.exception), "Can't detect expect file suffix .XX.po for '.de.po'.")
 
         _p = lint_po.PoFile(".a.d.de.po")
-        with self.assertRaises(lint_po.NoLanguageError, msg=_p.fname):
-            _p.lang()
-
-        _p = lint_po.PoFile("a.po")
         with self.assertRaises(lint_po.NoLanguageError, msg=_p.fname):
             _p.lang()
 
