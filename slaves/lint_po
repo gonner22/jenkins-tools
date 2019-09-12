@@ -274,7 +274,7 @@ def main(logger) -> None:
     args.files = list(itertools.filterfalse(lambda f: f.startswith('tmp/'),
                                             args.files))
 
-    if not args.files:
+    if not args.files and not args.cached:
         logger.warning("no file to process :("
                       " You may want to add files to operate on. See --help for further information.")
 
