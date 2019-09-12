@@ -30,6 +30,7 @@ import argparse
 import contextlib
 import functools
 import glob
+import itertools
 import logging
 import multiprocessing
 import os.path
@@ -268,6 +269,10 @@ def main(logger) -> None:
 
     if not args.files and not args.cached and not args.lang:
         args.files += glob.glob("**/*.po", recursive=True)
+
+    # Skip files in ./tmp/
+    args.files = list(itertools.filterfalse(lambda f: f.startswith('tmp/'),
+                                            args.files))
 
     if not args.files:
         logger.warning("no file to process :("
