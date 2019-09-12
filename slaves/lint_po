@@ -41,7 +41,7 @@ import sys
 import tempfile
 
 try:
-    import polib
+    import polib  # type: ignore
 except ImportError:
     sys.exit("You need to install python3-polib to use this program.")
 
