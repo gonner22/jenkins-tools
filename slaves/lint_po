@@ -176,14 +176,16 @@ class PoFile:
             else:
                 return False
 
-    def i18nspector(self) -> List[str]:
-        """@returns a list of issues raised by i18nspector removes
+    def i18nspector(self, i18nspector_env: Dict[str, str]) -> List[str]:
+        """i18nspector_env sets the environment variables for i18nspector
+           @returns a list of issues raised by i18nspector removes
                     allowed issues from @I18NINSPECTOR_ACCEPT.
         """
         cmd = ["i18nspector", "--language",
                self.lang_without_script(), self.fname]
         process = subprocess.run(
                 cmd,
+                env = i18nspector_env,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 universal_newlines=True,
@@ -195,7 +197,6 @@ class PoFile:
                 issues.append(" ".join([severity, issue, *content]))
 
         return issues
-
 
 @contextlib.contextmanager
 def pofile_readonly(fname: str):
@@ -212,7 +213,7 @@ def pofile_writable(fname: str):
     pf.write()
 
 
-def check_po_file(fname: str, extended: bool) -> Tuple[str, List[str]]:
+def check_po_file(fname: str, extended: bool, i18nspector_env: Dict[str, str]) -> Tuple[str, List[str]]:
     """check PO file for issues.
     @returns: nothing or a list of errors
     @extended: is used to check the header fields in more detail.
@@ -220,7 +221,7 @@ def check_po_file(fname: str, extended: bool) -> Tuple[str, List[str]]:
     errors = list()
     with pofile_readonly(fname) as poFile:
         try:
-            issues = poFile.i18nspector()
+            issues = poFile.i18nspector(i18nspector_env)
             if issues:
                 errors.append(
                     "i18nspector is not happy:\n\t"+"\n\t".join(issues))
@@ -312,18 +313,21 @@ def main(logger) -> None:
         fine = True
         # check only the headers
         pool = multiprocessing.Pool()
-        _check_po_file = functools.partial(check_po_file,
-                                           extended=args.extended)
-        for fname, issues in pool.imap_unordered(_check_po_file,
-                                                 args.files, 10):
-            if issues:
-                fine = False
-                # indent sub-issues:
-                issues = [i.replace("\n", "\n\t") for i in issues]
-                logger.error("{fname}:\n\t{issues}"
-                             .format(fname=fname, issues="\n\t".join(issues)))
-            else:
-                logger.debug("{fname} - No issue found.".format(fname=fname))
+        with tempfile.TemporaryDirectory() as tmpXDGCacheHome:
+            i18nspector_env = {"XDG_CACHE_HOME": tmpXDGCacheHome}
+            _check_po_file = functools.partial(check_po_file,
+                                               extended=args.extended,
+                                               i18nspector_env=i18nspector_env)
+            for fname, issues in pool.imap_unordered(_check_po_file,
+                                                     args.files, 10):
+                if issues:
+                    fine = False
+                    # indent sub-issues:
+                    issues = [i.replace("\n", "\n\t") for i in issues]
+                    logger.error("{fname}:\n\t{issues}"
+                                 .format(fname=fname, issues="\n\t".join(issues)))
+                else:
+                    logger.debug("{fname} - No issue found.".format(fname=fname))
 
         if not fine:
             sys.exit("checked files are not clean.")
