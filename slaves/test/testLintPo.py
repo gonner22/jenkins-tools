@@ -24,7 +24,7 @@ class TestCheckPo(unittest.TestCase):
                 name = os.path.basename(fpath)
                 newPath = os.path.join(tmpdir, name + ".en.po")
                 os.symlink(os.path.abspath(fpath), newPath)
-                path, issues = lint_po.check_po_file(newPath, extended=False)
+                path, issues = lint_po.check_po_file(newPath, extended=False, i18nspector_env={})
                 self.assertEqual(path, newPath)
                 self.assertEqual(issues, expected[name], msg=name)
 
@@ -37,7 +37,7 @@ class TestCheckPo(unittest.TestCase):
                 name = os.path.basename(fpath)
                 newPath = os.path.join(tmpdir, name + ".en.po")
                 os.symlink(os.path.abspath(fpath), newPath)
-                path, issues = lint_po.check_po_file(newPath, extended=True)
+                path, issues = lint_po.check_po_file(newPath, extended=True, i18nspector_env={})
                 self.assertEqual(path, newPath)
                 self.assertEqual(issues, expected[name], msg=name)
 
@@ -45,9 +45,9 @@ class TestCheckPo(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmpdir:
             newPath = os.path.join(tmpdir, "nonexisting.en.po")
             with self.assertRaises(FileNotFoundError, msg=newPath):
-                path, issues = lint_po.check_po_file(newPath, extended=False)
+                path, issues = lint_po.check_po_file(newPath, extended=False, i18nspector_env={})
             with self.assertRaises(FileNotFoundError, msg=newPath):
-                path, issues = lint_po.check_po_file(newPath, extended=True)
+                path, issues = lint_po.check_po_file(newPath, extended=True, i18nspector_env={})
 
 
     def test_defaultOption(self):
@@ -90,7 +90,7 @@ class TestCheckPo(unittest.TestCase):
                 lint_po.unify_po_file(newPath)
                 with open(newPath) as f:
                     self.assertEqual(f.read(), expectedContent, msg=name)
-                _, issues = lint_po.check_po_file(newPath, extended=True)
+                _, issues = lint_po.check_po_file(newPath, extended=True, i18nspector_env={})
                 self.assertEqual(issues, [], msg=name)
 
     def test_lang(self):
