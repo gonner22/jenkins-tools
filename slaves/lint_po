@@ -290,10 +290,10 @@ def main(logger) -> None:
         args.files += glob.glob("**/*.po", recursive=True)
 
     # Skip files in ./tmp/
-    args.files = list(itertools.filterfalse(lambda f: f.startswith('tmp/'),
+    files = list(itertools.filterfalse(lambda f: f.startswith('tmp/'),
                                             args.files))
 
-    if not args.files and not args.cached:
+    if not files and not args.cached:
         logger.warning("No file to process.\n"
                        "You may want to add files to operate on."
                        " See --help for further information.")
@@ -308,7 +308,7 @@ def main(logger) -> None:
     pool = multiprocessing.Pool()
     if args.fix:
         # unify PO headers for a list of files
-        list(pool.map(unify_po_file, args.files))
+        list(pool.map(unify_po_file, files))
     else:
         fine = True
         # check only the headers
@@ -319,7 +319,7 @@ def main(logger) -> None:
                                                extended=args.extended,
                                                i18nspector_env=i18nspector_env)
             for fname, issues in pool.imap_unordered(_check_po_file,
-                                                     args.files, 10):
+                                                     files, 10):
                 if issues:
                     fine = False
                     # indent sub-issues:
