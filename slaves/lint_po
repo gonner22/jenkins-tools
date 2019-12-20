@@ -318,8 +318,15 @@ def main(logger) -> None:
             _check_po_file = functools.partial(check_po_file,
                                                extended=args.extended,
                                                i18nspector_env=i18nspector_env)
-            for fname, issues in pool.imap_unordered(_check_po_file,
-                                                     files, 10):
+
+            # As we start 10 i18nspector instances, we run into a race
+            # condition, as all try to create $XDG_CACHE_HOME/rply, that's why
+            # we check the file before the others. see #17359#note-14
+            iterator = iter(files)
+            chain = [(_check_po_file(next(iterator)),),
+                     pool.imap_unordered(_check_po_file,iterator, 10)]
+
+            for fname, issues in itertools.chain.from_iterable(chain):
                 if issues:
                     fine = False
                     # indent sub-issues:
