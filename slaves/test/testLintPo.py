@@ -17,7 +17,7 @@ DIRNAME = os.path.dirname(__file__)
 class TestCheckPo(unittest.TestCase):
     def test_checkPo(self):
         with open(os.path.join(DIRNAME, "checkPo.yml")) as f:
-            expected = yaml.load(f)
+            expected = yaml.safe_load(f)
 
         with tempfile.TemporaryDirectory() as tmpdir:
             for fpath in glob.glob(os.path.join(DIRNAME, "checkPo/*")):
@@ -30,7 +30,7 @@ class TestCheckPo(unittest.TestCase):
 
     def test_checkPoExtended(self):
         with open(os.path.join(DIRNAME, "checkPoExtended.yml")) as f:
-            expected = yaml.load(f)
+            expected = yaml.safe_load(f)
 
         with tempfile.TemporaryDirectory() as tmpdir:
             for fpath in glob.glob(os.path.join(DIRNAME, "checkPo/*")):
@@ -52,7 +52,7 @@ class TestCheckPo(unittest.TestCase):
 
     def test_defaultOption(self):
         with open(os.path.join(DIRNAME, "checkPo.yml")) as f:
-            expected = yaml.load(f)
+            expected = yaml.safe_load(f)
 
         expectedOutput = []
         with tempfile.TemporaryDirectory() as tmpdir:
