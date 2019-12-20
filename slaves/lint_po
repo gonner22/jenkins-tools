@@ -297,6 +297,7 @@ def main(logger) -> None:
         logger.warning("No file to process.\n"
                        "You may want to add files to operate on."
                        " See --help for further information.")
+        sys.exit(0)
 
     for prog in ("i18nspector",):
         if shutil.which(prog) is None:
