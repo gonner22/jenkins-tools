@@ -293,10 +293,11 @@ def main(logger) -> None:
     files = list(itertools.filterfalse(lambda f: f.startswith('tmp/'),
                                             args.files))
 
-    if not files and not args.cached:
-        logger.warning("No file to process.\n"
-                       "You may want to add files to operate on."
-                       " See --help for further information.")
+    if not files:
+        if not args.cached:
+            logger.warning("No file to process.\n"
+                           "You may want to add files to operate on."
+                           " See --help for further information.")
         sys.exit(0)
 
     for prog in ("i18nspector",):
