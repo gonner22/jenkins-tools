@@ -28,6 +28,7 @@ mypy lint_po
 
 import argparse
 import contextlib
+import copy
 import functools
 import glob
 import itertools
@@ -221,7 +222,13 @@ def check_po_file(fname: str, extended: bool, i18nspector_env: Dict[str, str]) -
     errors = list()
     with pofile_readonly(fname) as poFile:
         try:
-            issues = poFile.i18nspector(i18nspector_env)
+            # Make sure to have a specific subdirectory (#17359):
+            my_env = copy.copy(i18nspector_env)
+            with tempfile.TemporaryDirectory(
+                    prefix="{dir}/".format(dir=my_env["XDG_CACHE_HOME"])) as tmpdir:
+                my_env["XDG_CACHE_HOME"] = tmpdir
+
+            issues = poFile.i18nspector(my_env)
             if issues:
                 errors.append(
                     "i18nspector is not happy:\n\t"+"\n\t".join(issues))
@@ -316,6 +323,9 @@ def main(logger) -> None:
         # check only the headers
         pool = multiprocessing.Pool()
         with tempfile.TemporaryDirectory() as tmpXDGCacheHome:
+            # A per-child subdirectory will actually be used, to avoid
+            # race conditions between those populating the cache, and
+            # those who aren't (#17359):
             i18nspector_env = {"XDG_CACHE_HOME": tmpXDGCacheHome}
             _check_po_file = functools.partial(check_po_file,
                                                extended=args.extended,
