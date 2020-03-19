@@ -322,24 +322,24 @@ def main(logger) -> None:
         fine = True
         # check only the headers
         pool = multiprocessing.Pool()
-        with tempfile.TemporaryDirectory() as tmpXDGCacheHome:
-            # The environment is no longer set here, but let's keep the
-            # signatures unchanged, in case we need to tweak some more
-            # things later on:
-            i18nspector_env = {}
-            _check_po_file = functools.partial(check_po_file,
-                                               extended=args.extended,
-                                               i18nspector_env=i18nspector_env)
-            for fname, issues in pool.imap_unordered(_check_po_file,
-                                                     files, 10):
-                if issues:
-                    fine = False
-                    # indent sub-issues:
-                    issues = [i.replace("\n", "\n\t") for i in issues]
-                    logger.error("{fname}:\n\t{issues}"
-                                 .format(fname=fname, issues="\n\t".join(issues)))
-                else:
-                    logger.debug("{fname} - No issue found.".format(fname=fname))
+
+        # The environment is no longer set here, but let's keep the
+        # signatures unchanged, in case we need to tweak some more
+        # things later on:
+        i18nspector_env = {}
+        _check_po_file = functools.partial(check_po_file,
+                                           extended=args.extended,
+                                           i18nspector_env=i18nspector_env)
+        for fname, issues in pool.imap_unordered(_check_po_file,
+                                                 files, 10):
+            if issues:
+                fine = False
+                # indent sub-issues:
+                issues = [i.replace("\n", "\n\t") for i in issues]
+                logger.error("{fname}:\n\t{issues}"
+                             .format(fname=fname, issues="\n\t".join(issues)))
+            else:
+                logger.debug("{fname} - No issue found.".format(fname=fname))
 
         if not fine:
             sys.exit("checked files are not clean.")
