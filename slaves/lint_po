@@ -222,16 +222,16 @@ def check_po_file(fname: str, extended: bool, i18nspector_env: Dict[str, str]) -
     errors = list()
     with pofile_readonly(fname) as poFile:
         try:
-            # Make sure to have a specific subdirectory (#17359):
-            my_env = copy.copy(i18nspector_env)
-            with tempfile.TemporaryDirectory(
-                    prefix="{dir}/".format(dir=my_env["XDG_CACHE_HOME"])) as tmpdir:
+            # Make sure to have a specific subdirectory for each call to
+            # avoid race conditions regarding the rply cache (#17359):
+            with tempfile.TemporaryDirectory() as tmpdir:
+                my_env = copy.copy(i18nspector_env)
                 my_env["XDG_CACHE_HOME"] = tmpdir
 
-            issues = poFile.i18nspector(my_env)
-            if issues:
-                errors.append(
-                    "i18nspector is not happy:\n\t"+"\n\t".join(issues))
+                issues = poFile.i18nspector(my_env)
+                if issues:
+                    errors.append(
+                        "i18nspector is not happy:\n\t"+"\n\t".join(issues))
         except subprocess.CalledProcessError as e:
             errors.append("i18nspector exited with {e.returncode} - stderr:\n"
                           "{e.stderr}".format(e=e))
@@ -323,10 +323,10 @@ def main(logger) -> None:
         # check only the headers
         pool = multiprocessing.Pool()
         with tempfile.TemporaryDirectory() as tmpXDGCacheHome:
-            # A per-child subdirectory will actually be used, to avoid
-            # race conditions between those populating the cache, and
-            # those who aren't (#17359):
-            i18nspector_env = {"XDG_CACHE_HOME": tmpXDGCacheHome}
+            # The environment is no longer set here, but let's keep the
+            # signatures unchanged, in case we need to tweak some more
+            # things later on:
+            i18nspector_env = {}
             _check_po_file = functools.partial(check_po_file,
                                                extended=args.extended,
                                                i18nspector_env=i18nspector_env)
