@@ -97,6 +97,7 @@ class TestCheckPo(unittest.TestCase):
         self.assertEqual(lint_po.PoFile("index.de.po").lang(), "de")
         self.assertEqual(lint_po.PoFile("x/a/a.fb.xx.po").lang(), "xx")
         self.assertEqual(lint_po.PoFile("a.po").lang(), "a")
+        self.assertEqual(lint_po.PoFile("ru@petr1708.po").lang(), "ru@petr1708")
 
         _p = lint_po.PoFile(".de.po")
         with self.assertRaises(lint_po.NoLanguageError, msg=_p.fname) as e:
@@ -117,6 +118,8 @@ class TestCheckPo(unittest.TestCase):
         self.assertEqual(lint_po.PoFile("index.de_DE.po").lang_without_script(), "de_DE")
         self.assertEqual(lint_po.PoFile("index.sr_Latn.po").lang_without_script(), "sr")
         self.assertEqual(lint_po.PoFile("index.sr_LAtn.po").lang_without_script(), "sr_LAtn")
+        self.assertEqual(lint_po.PoFile("ru@petr1708.po").lang_without_script(), "ru")
+        self.assertEqual(lint_po.PoFile("ru_RU@petr1708.po").lang_without_script(), "ru_RU")
 
     def test_needs_rewrap(self):
         with lint_po.pofile_readonly(os.path.join(DIRNAME, "checkPo/length")) as poFile:
