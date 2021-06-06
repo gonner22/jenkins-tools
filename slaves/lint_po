@@ -297,8 +297,11 @@ def main(logger) -> None:
         args.files += glob.glob("**/*.po", recursive=True)
 
     # Skip files in ./tmp/
-    files = list(itertools.filterfalse(lambda f: f.startswith('tmp/'),
-                                            args.files))
+    files = list(itertools.filterfalse(
+        lambda f:
+        f.startswith('tmp/')
+        or f.startswith('submodules/torbrowser-launcher/'),
+        args.files))
 
     if not files:
         if not args.cached:
